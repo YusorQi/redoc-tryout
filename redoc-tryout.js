@@ -1,3 +1,4 @@
+var md = {};
 // function sendRequest( method, body, headers) {
 //   param = {
 //     url: "http://172.18.211.201:5000/api/middleware-try-out",
@@ -27,8 +28,23 @@
 //     $('<span>').text(data.statusText).appendTo($target)
 //   })
 // }
+var swaggerJson = null;
 
-function printRequestForm(swaggerJson, path, method) {
+
+swaggerUrl = $('redoc').attr('spec-url')
+$.ajax({
+  url: swaggerUrl
+}).done(data => {
+
+  swaggerJson = data;
+  if(!swaggerJson.host) {
+    swaggerJson.host = defaultHost
+  }
+})
+function printRequestForm(swaggerJson, path, method,body) {
+
+console.log("print",swaggerJson)
+
   $('#target').empty()
   var form = $('#requestForm')
   form.empty();
@@ -41,69 +57,95 @@ function printRequestForm(swaggerJson, path, method) {
     .attr("value", method)
     .appendTo(form)
   $("<p>").appendTo(form)
+  $('<textarea class="reqBody" placeholder=" ">').attr("name","body").attr("value",{"body":body}).appendTo(form)
 
-  swaggerJson["paths"][path][method]['parameters'].map(
-    param => {
-      var label = param.in == 'query' ? '&' + param.name + '='
-                : param.in == 'path' ? '{' + param.name + '}:'
-                : param.in == 'header' ? '-H ' + param.name + ':'
-                : param.name + ':';
-      $("<span>").append("<b>").text(label).appendTo(form)
-      $(param.in == 'body' ? "<textarea>": "<input>")
-        .attr("name", param.name)
-        .attr("in", param.in)
-        .attr("placeholder", param.in + ":" + param.name)
-        .appendTo(form)
-      $("<br>").appendTo(form)
-    }
-  );
   $('#form').show();
 }
 
-// function collectDataAndSendRequest() {
-//   queryParams = $('input[in=query]').toArray().map(input => [input.name, input.value])
-//   pathParams = $('input[in=path]').toArray().map(input => [input.name, input.value])
-//   headerParams = $('input[in=header]').toArray().map(input => [input.name, input.value])
-//   body = $('input[in=body]').toArray().map(input => input.value).pop()
-//   uri = $('input[name=uri]').toArray().map(input => input.value).pop()
-//   method = $('input[name=method]').toArray().map(input => input.value).pop()
-//   formDataParams = $('input[in=formData]').toArray().map(input => [input.name, input.value])
+function collectDataAndSendRequest() {
+ 
+  queryParams = $('input[in=query]').toArray().map(input => [input.name, input.value])
+  pathParams = $('input[in=path]').toArray().map(input => [input.name, input.value])
+  // headerParams = $('input[in=header]').toArray().map(input => [input.name, input.value])
+ 
+  //TODO: GET BODY 
+   body = JSON.parse($('textarea').val());
 
-//   pathParams.map(param => {
-//     uri = uri.replace("{" + param[0] + "}", param[1])
-//   })
-//   if(queryParams.length > 0) {
-//     uri += "?" + queryParams.filter(p => p[1] && p[1] != '')
-//         .map(p => encodeURI(p[0])+ "=" + encodeURI(p[1]))
-//         .join("&")
-//   }
+  uri = $('input[name=uri]').toArray().map(input => input.value).pop()
+  method = $('input[name=method]').toArray().map(input => input.value).pop()
+  formDataParams = $('input[in=formData]').toArray().map(input => [input.name, input.value])
 
-//   if(!body && formDataParams.length > 0) {
-//     body = formDataParams.filter(p => p[1] && p[1] != '')
-//         .map(p => encodeURI(p[0])+ "=" + encodeURI(p[1]))
-//         .join("&")
-//   }
-
-//   var headers = headerParams.reduce((m,xy) => {m[xy[0]]=xy[1] ; return m;}, {})
-//   //var https = $('#https').prop('checked') ? true : undefined;
-//   sendRequest( method, body, Object.keys(headers).length != 0 ? headers : undefined)
-// }
+  pathParams.map(param => {
+    uri = uri.replace("{" + param[0] + "}", param[1])
+  })
+  if(queryParams.length > 0) {
+    uri += "?" + queryParams.filter(p => p[1] && p[1] != '')
+        .map(p => encodeURI(p[0])+ "=" + encodeURI(p[1]))
+        .join("&")
+  }
 
 
-// $('#sendButton').click(() => {
-//   collectDataAndSendRequest();
-// })
+  if(!body && formDataParams.length > 0) {
+    body = formDataParams.filter(p => p[1] && p[1] != '')
+        .map(p => encodeURI(p[0])+ "=" + encodeURI(p[1]))
+      .join("&")
+  }
 
-// var swaggerJson = null;
-// swaggerUrl = $('redoc').attr('spec-url')
-// $.ajax({
-//   url: swaggerUrl
-// }).done(data => {
-//   swaggerJson = typeof data == 'string' ? jsyaml.load(data): data
-//   if(!swaggerJson.host) {
-//     swaggerJson.host = defaultHost
-//   }
-// })
+  // var headers = headerParams.reduce((m,xy) => {m[xy[0]]=xy[1] ; return m;}, {})
+  var headers= {
+        "Content-Type": "application/json",
+        "accept": "application/json",
+        "Authorization": "Basic UWlfQ1JNOmdbXEc4LG1gYntSRSMpTEY="
+    }
+  // var https = $('#https').prop('checked') ? true : undefined;
+   var md = { "endpoint": `https://mw.prod.qi.iq:443${uri}` ,"method":method ,"body":body ,"headers": Object.keys(headers).length != 0 ? headers : undefined}
+
+  sendRequest(md)
+
+}
+async function sendRequest(md) {
+  var result = {};
+  var myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
+
+
+var requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: JSON.stringify(md),
+  redirect: 'follow'
+};
+
+    $target = $('#target')
+  $target.empty()
+  $('<img>').attr('src', 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Loading_icon_cropped.gif/40px-Loading_icon_cropped.gif').attr('width', '20').attr('height', '20').appendTo($target)
+
+ await fetch("https://ur-task.com/qi_dev_portal/api/proxy", requestOptions)
+   .then(response => { return response.json() }).then((data)=>{
+    $target.empty()
+ 
+      console.log(data)
+      result = JSON.stringify(data,undefined,2);
+     console.log("result",result)
+   
+   //   console.log("done:", result)
+    $('<span><b>Done</b></span>').appendTo($target)
+     $('<br>').appendTo($target)
+    
+     $('<div class="resData" id="resData">').attr('style', 'width:25%').appendTo($target)
+     document.getElementById('resData').textContent=JSON.stringify(data,undefined,2)
+    }).catch(error => console.log('error', error));
+
+ 
+  
+}
+
+$('#sendButton').click(() => {
+  collectDataAndSendRequest();
+})
+
+
 
 $(document).ready(() => {
 
@@ -114,8 +156,8 @@ $(document).ready(() => {
       verbNode = $($(event.target).parent().children()[0])
       var method = verbNode.text().trim();
       var path = verbNode.next('span').text().trim();
-
-      printRequestForm(swaggerJson, path, method);
+      var body = verbNode.next('text').text().trim();
+      printRequestForm(swaggerJson, path, method,body);
 
       $('#form').appendTo(verbNode.parent().next());
     });
