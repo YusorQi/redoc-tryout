@@ -20,6 +20,12 @@
     min-width: 300px;
     min-height: 150px
 }
+.clEuW {
+    position: initial !important; 
+    width: 100%;
+    z-index: 100;
+    background: rgb(17 23 26);
+    color: #fdfffc;}
 .cdtjou{
     background-color: rgb(23 30 33) !important;
 }
@@ -79,92 +85,53 @@ color: white;}
     max-width: 200px;
     height: 100%;
 
-  }/* The Modal (background) */
-.modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 10; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
-left: 0;
-  top: 0;
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  margin: 5% auto;
-margin-left:35% ;
-margin-right: 35%;
-min-width: 300px;
-}
+  } .gred {
 
-/* Modal Content */
-.modal-content {
-  position: relative;
-background-color: white;
-  margin: auto;
-  padding: 0;
-  border: 1px solid #888;
-  width: 80%;
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
-  -webkit-animation-name: animatetop;
-  -webkit-animation-duration: 0.4s;
-  animation-name: animatetop;
-  animation-duration: 0.4s
-}
-
-/* Add Animation */
-@-webkit-keyframes animatetop {
-  from {top:-300px; opacity:0} 
-  to {top:0; opacity:1}
-}
-
-@keyframes animatetop {
-  from {top:-300px; opacity:0}
-  to {top:0; opacity:1}
-}
-
-/* The Close Button */
-.close {
-  color: black;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.modal-header {
-  padding: 2px 16px;
- 
-
-}
-
-.modal-body {padding: 2px 16px;}
-
-.modal-footer {
-  padding:16px;
-  justify-content: space-around;
-display:flex;
-
-}
-.modal-footer input, .modal-footer button{
- cursor: pointer;
+    cursor: pointer;
     font-size: 15px;
     font-weight: 700;
     border: none;
-    height: 3rem;
-    width: 8rem;
+    color: rgb(50, 50, 159);
+    height: 100%;
+    width: 10rem;
     padding: 1rem;
+    border: 1px solid rgb(50, 50, 159);
     margin-right: 10px;
-    border-radius: 4px;}
-.modal-footer .send{
-color:green;
-border:1px solid green;
+    border-radius: 4px;
+  }
+
+.modal
+ { position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden;
+  transform: scale(1.1);
+  transition: visibility 0s linear 0.25s, opacity 0.25s 0s, transform 0.25s;}
+  .modal-content
+   { align-self: center;
+    background-color: white;
+    padding: 1rem 1.5rem;
+    width: 24rem;
+    border-radius: 0.5rem;
 }
-.emailinput{
-padding:0.5rem;
-margin-top:1%;
-margin-bottom: 1%;}
+.btn-close
+{  float: top !important;
+  width: 1.5rem;
+  line-height: 1.5rem;
+  text-align: center;;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  background-color: lightgray}
+
+.show-modal
+{  opacity: 1;
+  visibility: visible;
+  transform: scale(1.0);
+  transition: visibility 0s linear 0s, opacity 0.25s 0s, transform 0.25s}
